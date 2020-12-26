@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:test123/const/const.dart';
+import 'package:test123/screens/homepage/home.dart';
 
 class Login2 extends StatefulWidget {
   @override
@@ -7,6 +9,111 @@ class Login2 extends StatefulWidget {
 }
 
 class _Login2State extends State<Login2> {
+  bool _showLogin = true;
+
+  void _toggle() {
+    setState(() {
+      _showLogin = !_showLogin;
+    });
+  }
+
+  Future<void> _showMyDialog(message) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Alert'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text(message),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Ok'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  final TextEditingController email = TextEditingController();
+  final TextEditingController pass = TextEditingController();
+  final TextEditingController conPass = TextEditingController();
+
+  bool _success = false;
+  String _userEmail = '';
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void _signup() async {
+    if (!RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email.text)) {
+      _showMyDialog("Email Error");
+    } else if (pass.text.length < 6) {
+      _showMyDialog("Password must be greater than 6 chareter");
+    } else if (pass.text != conPass.text) {
+      _showMyDialog("Password Not Match");
+    } else {
+      try {
+        final User user = (await _auth.createUserWithEmailAndPassword(
+          email: email.text,
+          password: pass.text,
+        ))
+            .user;
+
+        if (user != null) {
+          setState(() {
+            _success = true;
+            _userEmail = user.email;
+            _showMyDialog(_userEmail + ' Success');
+          });
+        } else {
+          _success = false;
+        }
+      } catch (e) {}
+    }
+  }
+
+  void _login() async {
+    if (!RegExp(
+            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(email.text)) {
+      _showMyDialog("Email Error");
+    } else if (pass.text.length < 6) {
+      _showMyDialog("Password must be greater than 6 chareter");
+    } else {
+      try {
+        final User user = (await _auth.signInWithEmailAndPassword(
+          email: email.text,
+          password: pass.text,
+        ))
+            .user;
+
+        if (user != null) {
+          setState(() {
+            _success = true;
+            _userEmail = user.email;
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Home()));
+          });
+        } else {
+          _success = false;
+        }
+      } catch (e) {
+        _showMyDialog("Email or Password is wrong ");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -47,7 +154,9 @@ class _Login2State extends State<Login2> {
                 ),
                 SizedBox(height: 5),
                 Text(
-                  "Login to your account",
+                  _showLogin
+                      ? "Login to your account"
+                      : "Sign up to your account",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -76,19 +185,24 @@ class _Login2State extends State<Login2> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          "Create account? ",
+                          _showLogin
+                              ? "Create account? "
+                              : "Already have an Account?",
                           style: TextStyle(
                             color: Colors.grey,
                             fontSize: 18,
                             // fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
-                          "Sign up",
-                          style: TextStyle(
-                            color: kPrinaryColor,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        GestureDetector(
+                          onTap: _toggle,
+                          child: Text(
+                            _showLogin ? "Sign up" : "Login",
+                            style: TextStyle(
+                              color: kPrinaryColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -114,15 +228,25 @@ class _Login2State extends State<Login2> {
               ),
               child: Column(
                 children: [
-                  SizedBox(height: 30),
+                  SizedBox(height: 25),
                   TextField(
                     decoration: InputDecoration(hintText: "Email"),
+                    controller: email,
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 25),
                   TextField(
                     decoration: InputDecoration(hintText: "Password"),
+                    controller: pass,
                   ),
-                  SizedBox(height: 40),
+                  SizedBox(height: 25),
+                  _showLogin
+                      ? SizedBox()
+                      : TextField(
+                          decoration:
+                              InputDecoration(hintText: "Confirm Password"),
+                          controller: conPass,
+                        ),
+                  SizedBox(height: 25),
                   Container(
                     height: 60,
                     width: double.infinity,
@@ -135,12 +259,15 @@ class _Login2State extends State<Login2> {
                       ),
                     ),
                     child: Center(
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                      child: GestureDetector(
+                        onTap: _showLogin ? _login : _signup,
+                        child: Text(
+                          _showLogin ? "Login" : 'Signup',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),

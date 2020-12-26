@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:test123/const/const.dart';
 import 'package:test123/loginPage/login2.dart';
+import 'package:test123/welcomeScrean/welcomeScreen.dart';
 
 import 'loginPage/login.dart';
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
         primaryColor: kPrinaryColor,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Login2(),
+      home: WecomeScreen(),
     );
   }
 }
