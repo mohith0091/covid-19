@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:test123/const/const.dart';
 import 'package:test123/loginPage/login2.dart';
@@ -11,6 +9,7 @@ class WecomeScreen extends StatefulWidget {
 
 class _WecomeScreenState extends State<WecomeScreen> {
   int _currentIndex = 0;
+  PageController _pageController = PageController();
 
   List _images = [
     'assets/images/person.png',
@@ -24,14 +23,24 @@ class _WecomeScreenState extends State<WecomeScreen> {
   ];
 
   void _changeIndex(index) {
-    if (index > 2) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => Login2()));
+    setState(() {
+      _currentIndex = index;
+      print(_currentIndex);
+    });
+  }
+
+  void _controle(state) {
+    if (state == 'next') {
+      if (_currentIndex == 2) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => Login2()));
+      } else {
+        _pageController.nextPage(
+            duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+      }
     } else {
-      setState(() {
-        _currentIndex = index;
-        print(_currentIndex);
-      });
+      _pageController.previousPage(
+          duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
     }
   }
 
@@ -41,23 +50,24 @@ class _WecomeScreenState extends State<WecomeScreen> {
       body: Stack(
         children: [
           Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  kPrinaryColor,
+                  kSecondaryColor,
+                ],
+              ),
+            ),
             constraints: BoxConstraints.expand(),
             child: PageView.builder(
               onPageChanged: _changeIndex,
+              controller: _pageController,
               itemCount: 3,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
                   constraints: BoxConstraints.expand(),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        kPrinaryColor,
-                        kSecondaryColor,
-                      ],
-                    ),
-                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -68,14 +78,14 @@ class _WecomeScreenState extends State<WecomeScreen> {
                         padding: const EdgeInsets.all(40.0),
                         decoration: BoxDecoration(
                           image: DecorationImage(
-                            image: AssetImage(_images[_currentIndex]),
+                            image: AssetImage(_images[index]),
                           ),
                         ),
                       ),
                       SizedBox(height: 60),
                       Center(
                         child: Text(
-                          _titles[_currentIndex],
+                          _titles[index],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: Colors.white,
@@ -99,7 +109,7 @@ class _WecomeScreenState extends State<WecomeScreen> {
               children: [
                 _currentIndex >= 1
                     ? GestureDetector(
-                        onTap: () => _changeIndex(_currentIndex - 1),
+                        onTap: () => _controle('previous'),
                         child: Row(
                           children: [
                             Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -116,7 +126,7 @@ class _WecomeScreenState extends State<WecomeScreen> {
                       )
                     : SizedBox(),
                 GestureDetector(
-                  onTap: () => _changeIndex(_currentIndex + 1),
+                  onTap: () => _controle('next'),
                   child: Row(
                     children: [
                       Text(
