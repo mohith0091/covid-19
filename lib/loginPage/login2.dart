@@ -139,10 +139,25 @@ class _Login2State extends State<Login2> {
             ),
           ),
           Positioned(
-            top: 180,
-            left: 20,
+            bottom: 0,
+            top: height * .40,
+            child: ClipPath(
+              clipper: CusClipper(),
+              child: Container(
+                height: height * .6,
+                width: width,
+                decoration: BoxDecoration(
+                  color: Color(0xffeeeeee),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 30),
+            constraints: BoxConstraints.expand(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "Welcome",
@@ -163,21 +178,67 @@ class _Login2State extends State<Login2> {
                     fontWeight: FontWeight.normal,
                   ),
                 ),
-              ],
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            top: height * .40,
-            child: ClipPath(
-              clipper: CusClipper(),
-              child: Container(
-                height: height * .6,
-                width: width,
-                decoration: BoxDecoration(
-                  color: Color(0xffeeeeee),
+                SizedBox(height: 30),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  height: 350,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 25),
+                      TextField(
+                        decoration: InputDecoration(hintText: "Email"),
+                        controller: email,
+                      ),
+                      SizedBox(height: 25),
+                      TextField(
+                        decoration: InputDecoration(hintText: "Password"),
+                        controller: pass,
+                      ),
+                      SizedBox(height: 25),
+                      _showLogin
+                          ? SizedBox()
+                          : TextField(
+                              decoration:
+                                  InputDecoration(hintText: "Confirm Password"),
+                              controller: conPass,
+                            ),
+                      SizedBox(height: 25),
+                      Container(
+                        height: 60,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(40),
+                          ),
+                          gradient: LinearGradient(
+                            colors: [kPrinaryColor, kSecondaryColor],
+                          ),
+                        ),
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: _showLogin ? _login : _signup,
+                            child: Text(
+                              _showLogin ? "Login" : 'Signup',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
+                SizedBox(height: 30),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Row(
@@ -207,73 +268,9 @@ class _Login2State extends State<Login2> {
                         ),
                       ],
                     ),
-                    SizedBox(height: 100),
                   ],
                 ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 280,
-            left: 30,
-            right: 30,
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              height: 350,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20),
-                ),
-              ),
-              child: Column(
-                children: [
-                  SizedBox(height: 25),
-                  TextField(
-                    decoration: InputDecoration(hintText: "Email"),
-                    controller: email,
-                  ),
-                  SizedBox(height: 25),
-                  TextField(
-                    decoration: InputDecoration(hintText: "Password"),
-                    controller: pass,
-                  ),
-                  SizedBox(height: 25),
-                  _showLogin
-                      ? SizedBox()
-                      : TextField(
-                          decoration:
-                              InputDecoration(hintText: "Confirm Password"),
-                          controller: conPass,
-                        ),
-                  SizedBox(height: 25),
-                  Container(
-                    height: 60,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(40),
-                      ),
-                      gradient: LinearGradient(
-                        colors: [kPrinaryColor, kSecondaryColor],
-                      ),
-                    ),
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: _showLogin ? _login : _signup,
-                        child: Text(
-                          _showLogin ? "Login" : 'Signup',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
         ],
